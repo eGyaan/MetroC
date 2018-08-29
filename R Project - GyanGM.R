@@ -290,8 +290,10 @@ pie3D(ljobs$freq, labels = ljobs$location, explode = 0.1, labelcol = "blue")
 # Q2. What are top six companies with most jobs in data science ?
 require(plyr)
 cjobs <- head(print(arrange(count(dsJobsFinal, 'company'), -freq)))
-barplot(cjobs$freq, main="Top 6 DS job providers", xlab = "Companies", ylab = "No of jobs"
-        , names.arg = cjobs$company, col="brown")
+lbls = c("TD", "CPP", "BMO", "Scotia", "TCC", "CIBC")
+plot(cjobs$freq, type="b", main="Top 6 DS job providers", xlab = "Companies", ylab = "No of jobs"
+        , col="brown")
+text(cjobs$freq, lbls, pos = 1)
 
 # Q3. Analyst vs Scientist jobs
 install.packages("sqldf")
