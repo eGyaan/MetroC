@@ -19,11 +19,45 @@ Q5. Most popular skillsets required for DS job ?
 ```
 </small>
 
-![plot of chunk unnamed-chunk-1](./plots/Skills.png)
-
-
-Code snippet to extract & clean data:
+Code snippets to output extracts:
 =====================================
+```
+Q1. Location wise job listings ?
+```
+![plot of chunk unnamed-chunk-1](./plots/locationwiseJobs.png)
+
+Code snippets to output extracts contd:
+=====================================
+```
+Q2. What are top six companies with most jobs in data science ?
+```
+![plot of chunk unnamed-chunk-2](./plots/Top6employers.png)
+
+Code snippets to output extracts contd:
+=====================================
+```
+Q3. Analyst vs Scientist jobs
+```
+![plot of chunk unnamed-chunk-3](./plots/AnalystvsScientist.png)
+
+Code snippets to output extracts contd:
+=====================================
+
+```
+Q4. What is the most commonly used word in job postings ?
+```
+![plot of chunk unnamed-chunk-4](./plots/mostPopularWord.png)
+
+Code snippets to output extracts contd:
+=====================================
+
+```
+
+Q5. Most popular skillsets required for DS job ?
+```
+![plot of chunk unnamed-chunk-5](./plots/Skills.png)
+
+
 
 Conclusion:
 ===========
