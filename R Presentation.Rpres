@@ -19,13 +19,55 @@ Q5. Most popular skillsets required for DS job ?
 ```
 </small>
 
+Code snippets to output extracts:
+=====================================
+```
+Q1. Location wise job listings ?
+```
 ```{r echo=FALSE, fig.height=30, fig.width=40}
+knitr::include_graphics('./plots/locationwiseJobs.png')
+```
+
+Code snippets to output extracts contd:
+=====================================
+```
+Q2. What are top six companies with most jobs in data science ?
+```
+```{r echo=FALSE, fig.height=30, fig.width=40}
+knitr::include_graphics('./plots/Top6employers.png')
+```
+
+Code snippets to output extracts contd:
+=====================================
+```
+Q3. Analyst vs Scientist jobs
+```
+```{r echo=FALSE, fig.height=30, fig.width=40}
+knitr::include_graphics('./plots/AnalystvsScientist.png')
+```
+
+Code snippets to output extracts contd:
+=====================================
+
+```
+Q4. What is the most commonly used word in job postings ?
+```
+```{r echo=FALSE, fig.height=30, fig.width=40}
+knitr::include_graphics('./plots/mostPopularWord.png')
+```
+
+Code snippets to output extracts contd:
+=====================================
+
+```
+
+Q5. Most popular skillsets required for DS job ?
+```
+```{r echo=FALSE}
 knitr::include_graphics('./plots/Skills.png')
 ```
 
 
-Code snippet to extract & clean data:
-=====================================
 
 Conclusion:
 ===========
