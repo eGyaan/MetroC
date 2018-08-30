@@ -119,7 +119,7 @@ scrape_web = function(search_page, nsPages) {
   return(scraped)
 }
 # Scrapping 'data jobs' near by Ontario, Canada from www.indeed.ca by calling above function
-data_jobs_scrapped = scrape_web(
+ds_jobs_scrapped = scrape_web(
   search_page = 'https://www.indeed.ca/jobs?as_and=&as_phr=&as_any=%22analyst%22,+%22scientist%22&as_not=&as_ttl=&as_cmp=&jt=all&st=&salary=&radius=50&l=Toronto,+ON&fromage=any&limit=50&sort=&psf=advsrch',
   nsPages = 20
 )
@@ -128,20 +128,20 @@ data_jobs_scrapped = scrape_web(
 ## But can be useful if let's say we want to pull all job posting from ON and then filter only some using below filter conditions. OR can be used to refine the current results into specific job title or locaiton
 
 ## TRANSFORMING OR APPLYING FILTERS
-# data_jobs_scrapped_2 = data_jobs_scrapped %>%
+# ds_jobs_scrapped_2 = ds_jobs_scrapped %>%
 #   filter(
 #     grepl(pattern = 'analyst | scientist', x = title, ignore.case = TRUE)
 #     # Remove cases where job title contains "analyst" or seniority level.
 #     #, !grepl(pattern = 'analyst|sr.|jr.|senior|junior|lead|intern', x = title, ignore.case = TRUE)
 #   ) 
 
-#data_jobs_scrapped
-View(data_jobs_scrapped)
-# data_jobs_scrapped[order(data_jobs_scrapped$title),]
+#ds_jobs_scrapped
+View(ds_jobs_scrapped)
+# ds_jobs_scrapped[order(ds_jobs_scrapped$title),]
 
 ## REMOVING DUPLICATES
-View(unique(data_jobs_scrapped))
-dsJobsFinal <-unique(data_jobs_scrapped)
+View(unique(ds_jobs_scrapped))
+dsJobsFinal <-unique(ds_jobs_scrapped)
 
 ### SCRAPE FUNCTION II for scrapping most popular SKILL SETS required for DS jobs based on their running total
 # Load packages
