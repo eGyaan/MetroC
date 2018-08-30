@@ -181,25 +181,25 @@ library(stringr)
 library(dplyr)
 library(ggplot2)
 
-# Indeed Search Words
+# Search key words
 job_title <- "\"analyst%2C+scientist\""
 location <- "Toronto%2C+ON"
 
-# use advanced search to get 50 results in a page
-BASE_URL <- 'https://www.indeed.ca/'
-ADV_URL <- paste0('https://www.indeed.ca/jobs?as_and=&as_phr=&as_any=%22analyst%22%2C+%22scientist%22&as_not=&as_ttl=&as_cmp=&jt=all&st=&salary=&radius=50&l=Toronto%2C+ON&fromage=any&limit=50&sort=&psf=advsrch', job_title, '&l=', location)
-cat(ADV_URL)
-cat(BASE_URL)
+# Advanced search indeed site to get 50 results in a page
+abs_URL <- 'https://www.indeed.ca/'
+search_URL <- paste0('https://www.indeed.ca/jobs?as_and=&as_phr=&as_any=%22analyst%22%2C+%22scientist%22&as_not=&as_ttl=&as_cmp=&jt=all&st=&salary=&radius=50&l=Toronto%2C+ON&fromage=any&limit=50&sort=&psf=advsrch', job_title, '&l=', location)
+cat(search_URL)
+cat(abs_URL)
 
 # get the html file from search url
-start_page <- read_html(ADV_URL)
+start_page <- read_html(search_URL)
 
 # get the total job count 
 job_count <- unlist(strsplit(start_page %>% 
                                html_node("#searchCount") %>%
                                html_text(), split = ' ')) 
 job_count <- as.numeric(str_replace_all(job_count[length(job_count)],',',''))
-cat('Total job count: ', job_count)
+cat('Total jobs in market: ', job_count)
 
 # Get start page job URLs
 links <- start_page %>%
@@ -207,23 +207,17 @@ links <- start_page %>%
   # html_text()
   html_attr('href')
 
-# Get result page links
-page.links <- start_page %>%
+# Get actual job urls from each search page
+individual_job_urls <- start_page %>%
   html_nodes(xpath = '//div[contains(@class,"pagination")]//a') %>%
   html_attr('href')
 
-KEYWORDS <- c('Hadoop','Python','\\bSQL', 'NoSQL','\\bR\\b', 'Spark', 'SAS', 'Excel', 'Java', 'Tableau', 'CSS', 'Oracle')
+keySkills <- c('Hadoop','Python','\\bSQL', 'NoSQL','\\bR\\b', 'Spark', 'SAS', 'Excel', 'Java', 'Tableau', 'CSS', 'Oracle')
 
-# Clean the raw html - removing commas, tabs, line changers, etc  
-clean.text <- function(text)
-{
-  str_replace_all(text, regex('\r\n|\n|\t|\r|,|/|<|>|\\.'), ' ')
-}
-
-# Given running total dataframe and links to scrape skills and compute running total
+# Start scrapping data
 ScrapeJobLinks <- function(res, job.links){
   for(i in 1:length(job.links)){
-    job.url <- paste0(BASE_URL,job.links[i])
+    job.url <- paste0(abs_URL,job.links[i])
     
     #Sys.sleep(0.001)
     cat(paste0('Reading job ', i, '\n'))
@@ -234,8 +228,8 @@ ScrapeJobLinks <- function(res, job.links){
                                    html_node(".company") %>%
                                    html_text(), split = ' '))
       text <- html_text(html)
-      text <- clean.text(text)
-      df <- data.frame(skill = KEYWORDS, count = ifelse(str_detect(text, KEYWORDS), 1, 0))
+      text <- tidy.data(text)
+      df <- data.frame(skill = keySkills, count = ifelse(str_detect(text, keySkills), 1, 0))
       res$running$count <- res$running$count + df$count
       res$num_jobs <- res$num_jobs + 1
     }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
@@ -243,29 +237,29 @@ ScrapeJobLinks <- function(res, job.links){
   return(res)
 }
 
-# For display purpose, we also need the \\b removed from the keyword set
-KEYWORDS_DISPLAY <- c('Hadoop','Python','SQL', 'NoSQL','R', 'Spark', 'SAS', 'Excel', 'Java', 'Tableau', 'CSS', 'Oracle')
+# Keywords for display purpose removing escape characters
+disp_keySkills <- c('Hadoop','Python','SQL', 'NoSQL','R', 'Spark', 'SAS', 'Excel', 'Java', 'Tableau', 'CSS', 'Oracle')
 
-# Create running total dataframe
-running <- data.frame(skill = KEYWORDS_DISPLAY, count = rep(0, length(KEYWORDS_DISPLAY)))
+# Creating running total dataframe
+running <- data.frame(skill = disp_keySkills, count = rep(0, length(disp_keySkills)))
 
-# # Since the indeed only display max of 20 pages from search result, we cannot use job_count but need to track by creating a num_jobs
+# # Since the indeed only display max of 20 pages from search result, we cannot use job_count but need to track by creating a custom variable num_jobs
 num_jobs <- 0
 # 
 # # Here is our results object that contains the two stats
 results <- list("running" = running, "num_jobs" = num_jobs)
 
 if(job_count != 0){
-  cat('Scraping jobs in Start Page\n')
+  cat('Scraping jobs in first search page\n')
   results <- ScrapeJobLinks(results, links)
 }
 
-# for(p in 1:length(page.links)-1){
+# for(p in 1:length(individual_job_urls)-1){
 #   
-#   cat('Moving to Next 50 jobs\n')
+#   cat('Searching next 50 jobs in next search page\n')
 #   
 #   # Navigate to next page
-#   new.page <- read_html(paste0(BASE_URL, page.links[p]))
+#   new.page <- read_html(paste0(abs_URL, individual_job_urls[p]))
 #   
 #   # Get new page job URLs
 #   links <- new.page %>%
@@ -308,7 +302,7 @@ barplot(aVSs$count, main="Analyst vs Scientist Jobs", ylab = "Titles", xlab = "N
 # Q4. What is the most commonly used word in job postings ?
 # install.packages("tm")
 require("tm")
-myCorpus <- Corpus(VectorSource(data_jobs_scrapped$summary))
+myCorpus <- Corpus(VectorSource(dsJobsFinal$summary))
 my_tdm <- TermDocumentMatrix(myCorpus, control = list(removePunctuation = TRUE, stopwords=TRUE))
 m <- as.matrix(my_tdm)
 words <- sort(rowSums(m), decreasing = T)
@@ -328,3 +322,12 @@ require(ggplot2)
 ggplot(results$running, aes(reorder(skill,-count), count)) + geom_bar(stat="identity") +
   labs(x = 'Skill', y = 'Occurrences (%)', title = "Skills required")
 
+# saveRDS(dsJobsFinal, "dsJobsFinal")
+# install.packages("reader")
+# require(reader)
+# ?get.delim(dsJobsFinal)
+# write.table(dsJobsFinal, "dsJobsFinal1")
+write.csv(dsJobsFinal, "dsJobsFinal2.csv")
+write.csv(results$running, "textMining.csv")
+
+test <-read.table("./dsJobsFinal")
