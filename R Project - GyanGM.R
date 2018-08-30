@@ -288,9 +288,6 @@ require(wordcloud)
 wordcloud(words = my_data$word, freq = my_data$freq, min.freq = 2, max.words = 145, random.order = F
           , rot.per = 0.35, colors = brewer.pal(8, "Paired"))
 
-hist(my_data$freq, main="Histogram for Air Passengers", xlab="Passengers"
-     , ylab = "Score", col="darkmagenta")
-
 # Q5. Most popular skillsets required for DS job ?
 print(arrange(results$running, desc(count)))
 require(ggplot2)
