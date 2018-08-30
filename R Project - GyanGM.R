@@ -131,10 +131,8 @@ data_jobs_scrapped = scrape_web(
 # data_jobs_scrapped_2 = data_jobs_scrapped %>%
 #   filter(
 #     grepl(pattern = 'analyst | scientist', x = title, ignore.case = TRUE)
-#     #,
 #     # Remove cases where job title contains "analyst" or seniority level.
-#     #!grepl(pattern = 'analyst|sr.|jr.|senior|junior|lead|intern', 
-#     #       x = title, ignore.case = TRUE)
+#     #, !grepl(pattern = 'analyst|sr.|jr.|senior|junior|lead|intern', x = title, ignore.case = TRUE)
 #   ) 
 
 #data_jobs_scrapped
