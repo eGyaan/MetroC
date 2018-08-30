@@ -1,33 +1,26 @@
 ## FUNCITON DEFINITIONS ##
-
-### DATA CLEANING FUNCIOTN
-  # Function to clean junk characters from data; used for data cleaning
+  # User defined function to clean junk characters from data
 tidy.data <- function(data)
 {
   str_replace_all(data, regex('\r\n|\n|\t|\r|,|/|<|>|\\.'), ' ')
 }
 
-### SCRAPE FUNCTION
+### SCRAPE FUNCTION I
   # Function to pull URL from web and extract HTML content as R dataset
   # First argument `search_page` is the first page of search results.
   # Second argument `nsPages` is the number of pages of search results to be scraped.
 
 scrape_web = function(search_page, nsPages) {
-  
   # Checking and installing required R packages
-  
   # if (!require("magrittr")) {
   #   install.packages("magrittr")
   # }
-  # 
   # if (!require("rvest")) {
   #   install.packages("rvest")
   # }
-  # 
   # if (!require("tidyverse")) {
   #   install.packages("tidyverse")
   # }
-  
   require(magrittr)
   require(rvest)
   require(tidyverse)
@@ -46,17 +39,13 @@ scrape_web = function(search_page, nsPages) {
   
   # Setting index of the first element edited in each iteration of the loop to zero.
   k = 0
-  
   # Looping through each search result.
   for (i in 1:nsPages) {
-    
     # Navigating to current_url & loading it into R as XML.
     current_page = read_html(current_url)
-    
     # Extracting job postings from current page, finding their HTML nodes containing job details, & storing them in empty lists created above.
     jobs = current_page %>%
-      html_nodes('[class="  row  result"]')
-    
+    html_nodes('[class="  row  result"]')
     # Loop through each job posting.
     for (j in 1:length(jobs)) {
       
@@ -93,20 +82,16 @@ scrape_web = function(search_page, nsPages) {
     
     # Each list has k + j elements. Increase k so that we don't overwrite list contents in the next loop iteration.
     k = k + j
-    
-    # Note: We've scraped the data we want from every job ad on the current i.e. first search result page.
-    
-    # Change the current URL to be the URL of the next page of search results.
+    # Now, we've scraped the data we want from every job ad on the current i.e. first search result page.
+    # So, changing the current URL to be the URL of the next page of search results.
     # Note: Indeed's search result page url's follow a simple pattern. 
     # Page 1 is 'https://www.indeed.ca/jobs?q=data+scientist&l=Toronto%2C+ON'.
     # Page 2 is 'https://www.indeed.ca/jobs?q=data+scientist&l=Toronto%2C+ON&start=10'.
     # Page 3 is 'https://www.indeed.ca/jobs?q=data+scientist&l=Toronto%2C+ON&start=20'.
-  
     current_url = paste0(search_page, '&start=', as.character(i * 10))
     
     # Wait 1-5 seconds # optional
     Sys.sleep(runif(n = 1, min = 1, max = 5))
- 
     # This loop will repeat for every next page of search results until nsPages max value is reached.
   }
   
@@ -133,8 +118,7 @@ scrape_web = function(search_page, nsPages) {
     set_colnames(c('title', 'company', 'location', 'summary', 'link', 'postedD'))
   return(scraped)
 }
-
-# Scrapping 'data jobs' near by Ontario, Canada from www.indeed.ca.
+# Scrapping 'data jobs' near by Ontario, Canada from www.indeed.ca by calling above function
 data_jobs_scrapped = scrape_web(
   search_page = 'https://www.indeed.ca/jobs?as_and=&as_phr=&as_any=%22analyst%22,+%22scientist%22&as_not=&as_ttl=&as_cmp=&jt=all&st=&salary=&radius=50&l=Toronto,+ON&fromage=any&limit=50&sort=&psf=advsrch',
   nsPages = 20
@@ -161,7 +145,7 @@ View(data_jobs_scrapped)
 View(unique(data_jobs_scrapped))
 dsJobsFinal <-unique(data_jobs_scrapped)
 
-###### MOST POPULAR SKILLSETS for DS jobs
+### SCRAPE FUNCTION II for scrapping most popular SKILL SETS required for DS jobs based on their running total
 # Load packages
 library(rvest)
 library(stringr)
@@ -233,9 +217,10 @@ running <- data.frame(skill = disp_keySkills, count = rep(0, length(disp_keySkil
 # # Since the indeed only display max of 20 pages from search result, we cannot use job_count but need to track by creating a custom variable num_jobs
 num_jobs <- 0
 # 
-# # Here is our results object that contains the two stats
+# Here is our result that contains the two stats
 results <- list("running" = running, "num_jobs" = num_jobs)
 
+# Calling second UDF for most sought skill sets
 if(job_count != 0){
   cat('Scraping jobs in first search page\n')
   results <- ScrapeJobLinks(results, links)
@@ -258,7 +243,7 @@ if(job_count != 0){
 # }
 
 
-###*********** ANALYSIS PART ***********### 
+###*** ANALYSIS PART for Metro College Project ****### 
 
 # Exporting extracted datasets
 write.csv(dsJobsFinal, "dsJobsFinal2.csv")
