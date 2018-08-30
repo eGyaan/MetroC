@@ -248,6 +248,7 @@ write.csv(dsJobsFinal, "dsJobsFinal2.csv")
 write.csv(results$running, "textMining.csv")
 
 # Q1. Location wise job listings ?
+# install.packages("plyr")
 require(plyr)
 ljobs<- print(arrange(count(dsJobsFinal, 'location'), -freq))
 ljobs
