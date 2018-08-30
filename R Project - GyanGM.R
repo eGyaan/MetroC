@@ -38,17 +38,11 @@ scrape_web = function(search_page, nsPages) {
   
   # Creating empty lists to store the scraped data.
   titles = list()
-  
   companies = list()
-  
   summaries = list()
-  
   locations = list()
-  
   joblinks = list()
-  
   posteddate = list()
-  
   
   # Setting index of the first element edited in each iteration of the loop to zero.
   k = 0
@@ -56,58 +50,58 @@ scrape_web = function(search_page, nsPages) {
   # Looping through each search result.
   for (i in 1:nsPages) {
     
-    # 1. Navigating to current_url & loading it into R as XML.
+    # Navigating to current_url & loading it into R as XML.
     current_page = read_html(current_url)
     
-    # 2. Extracting job postings from current page, finding their HTML nodes containing job details, & storing them in empty lists created above.
+    # Extracting job postings from current page, finding their HTML nodes containing job details, & storing them in empty lists created above.
     ads = current_page %>%
       html_nodes('[class="  row  result"]')
     
-    # 3. Loop through each job posting.
+    # Loop through each job posting.
     for (j in 1:length(ads)) {
       
-      # 3a. Get the job title and add it to a list.
+      # Get the job title and add it to a list.
       titles[[j + k]] = ads[[j]] %>%
         html_nodes('[class=jobtitle]') %>%
         html_text()  # Outputted as character.
       
-      # 3b. Get the company and add it to a list.
+      # Get the company and add it to a list.
       companies[[j + k]] = ads[[j]] %>%
         html_nodes('[class=company]') %>%
         html_text()
       
-      # 3c. Get the job summary and add it to a list.
+      # Get the job summary and add it to a list.
       summaries[[j + k]] = ads[[j]] %>%
         html_nodes('[class=summary]') %>%
         html_text() 
       
-      # 4d. Get the company location and add it to a list.
+      # Get the company location and add it to a list.
       locations[[j + k]] = ads[[j]] %>%
         html_nodes('[class=location]') %>%
         html_text() 
       
-      # 5e. Get the job URLs and add it to a list.
+      # Get the job URLs and add it to a list.
       joblinks[[j + k]] = ads[[j]] %>%
         html_nodes("h2 a") %>%
         html_attr('href')
       
-      # 6f. Get the job posted time and add it to a list.
+      # Get the job posted time and add it to a list.
       posteddate[[j + k]] = ads[[j]] %>%
         html_nodes('[class=date]') %>%
         html_text() 
     }
     
-    # 4. Each list has k + j elements. Increase k so that we don't overwrite list contents in the next loop iteration.
+    # Each list has k + j elements. Increase k so that we don't overwrite list contents in the next loop iteration.
     k = k + j
     
     # Note: We've scraped the data we want from every job ad on the current i.e. first search result page.
     
-    # 5. Change the current URL to be the URL of the next page of search results.
+    # Change the current URL to be the URL of the next page of search results.
     # Note: Indeed's search result page url's follow a simple pattern. 
-    # Page 1 is 'https://www.indeed.ca/jobs?q=data+scientist&l=new+york%2C+ny'.
-    # Page 2 is 'https://www.indeed.ca/jobs?q=data+scientist&l=new+york%2C+ny&start=10'.
-    # Page 3 is ''https://www.indeed.ca/jobs?q=data+scientist&l=new+york%2C+ny&start=20'.
-    
+    # Page 1 is 'https://www.indeed.ca/jobs?q=data+scientist&l=Toronto%2C+ON'.
+    # Page 2 is 'https://www.indeed.ca/jobs?q=data+scientist&l=Toronto%2C+ON&start=10'.
+    # Page 3 is 'https://www.indeed.ca/jobs?q=data+scientist&l=Toronto%2C+ON&start=20'.
+  
     current_url = paste0(search_page, '&start=', as.character(i * 10))
     
     # 6. Wait 1-5 seconds, to look more human.
@@ -174,7 +168,7 @@ View(data_jobs_scrapped)
 View(unique(data_jobs_scrapped))
 dsJobsFinal <-unique(data_jobs_scrapped)
 
-###### MOST POPULAR SKILLSETS for DS job
+###### MOST POPULAR SKILLSETS for DS jobs
 # Load packages
 library(rvest)
 library(stringr)
@@ -272,6 +266,11 @@ if(job_count != 0){
 
 
 ###*********** ANALYSIS PART ***********### 
+
+# Exporting extracted datasets
+write.csv(dsJobsFinal, "dsJobsFinal2.csv")
+write.csv(results$running, "textMining.csv")
+
 # Q1. Location wise job listings ?
 require(plyr)
 ljobs<- print(arrange(count(dsJobsFinal, 'location'), -freq))
@@ -321,13 +320,3 @@ print(arrange(results$running, desc(count)))
 require(ggplot2)
 ggplot(results$running, aes(reorder(skill,-count), count)) + geom_bar(stat="identity") +
   labs(x = 'Skill', y = 'Occurrences (%)', title = "Skills required")
-
-# saveRDS(dsJobsFinal, "dsJobsFinal")
-# install.packages("reader")
-# require(reader)
-# ?get.delim(dsJobsFinal)
-# write.table(dsJobsFinal, "dsJobsFinal1")
-write.csv(dsJobsFinal, "dsJobsFinal2.csv")
-write.csv(results$running, "textMining.csv")
-
-test <-read.table("./dsJobsFinal")
