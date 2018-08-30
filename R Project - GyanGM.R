@@ -54,39 +54,39 @@ scrape_web = function(search_page, nsPages) {
     current_page = read_html(current_url)
     
     # Extracting job postings from current page, finding their HTML nodes containing job details, & storing them in empty lists created above.
-    ads = current_page %>%
+    jobs = current_page %>%
       html_nodes('[class="  row  result"]')
     
     # Loop through each job posting.
-    for (j in 1:length(ads)) {
+    for (j in 1:length(jobs)) {
       
       # Get the job title and add it to a list.
-      titles[[j + k]] = ads[[j]] %>%
+      titles[[j + k]] = jobs[[j]] %>%
         html_nodes('[class=jobtitle]') %>%
         html_text()  # Outputted as character.
       
       # Get the company and add it to a list.
-      companies[[j + k]] = ads[[j]] %>%
+      companies[[j + k]] = jobs[[j]] %>%
         html_nodes('[class=company]') %>%
         html_text()
       
       # Get the job summary and add it to a list.
-      summaries[[j + k]] = ads[[j]] %>%
+      summaries[[j + k]] = jobs[[j]] %>%
         html_nodes('[class=summary]') %>%
         html_text() 
       
       # Get the company location and add it to a list.
-      locations[[j + k]] = ads[[j]] %>%
+      locations[[j + k]] = jobs[[j]] %>%
         html_nodes('[class=location]') %>%
         html_text() 
       
       # Get the job URLs and add it to a list.
-      joblinks[[j + k]] = ads[[j]] %>%
+      joblinks[[j + k]] = jobs[[j]] %>%
         html_nodes("h2 a") %>%
         html_attr('href')
       
       # Get the job posted time and add it to a list.
-      posteddate[[j + k]] = ads[[j]] %>%
+      posteddate[[j + k]] = jobs[[j]] %>%
         html_nodes('[class=date]') %>%
         html_text() 
     }
@@ -104,24 +104,18 @@ scrape_web = function(search_page, nsPages) {
   
     current_url = paste0(search_page, '&start=', as.character(i * 10))
     
-    # 6. Wait 1-5 seconds, to look more human.
+    # Wait 1-5 seconds # optional
     Sys.sleep(runif(n = 1, min = 1, max = 5))
  
-    # 7. Repeat steps 1-6 for every page of search results.
+    # This loop will repeat for every next page of search results until nsPages max value is reached.
   }
   
   # Combinining above lists into matrices that is also appending data in rows in new matrices.
-  
   titles_final = do.call(rbind, titles)
-  
   companies_final = do.call(rbind, companies)
-  
   summaries_final = do.call(rbind, summaries)
-  
   locations_final = do.call(rbind, locations)
-  
   joblinks_final = do.call(rbind, joblinks)
-  
   posteddate_final = do.call(rbind, posteddate)
   
   ## Some Data Cleaning using tidy.data() function created above and built-in function trimws.
@@ -152,7 +146,6 @@ data_jobs_scrapped = scrape_web(
 ## TRANSFORMING OR APPLYING FILTERS
 # data_jobs_scrapped_2 = data_jobs_scrapped %>%
 #   filter(
-#     # Keep only ads w/ "Data Scientist" in the title.
 #     grepl(pattern = 'analyst | scientist', x = title, ignore.case = TRUE)
 #     #,
 #     # Remove cases where job title contains "analyst" or seniority level.
