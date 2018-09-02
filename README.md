@@ -1,4 +1,4 @@
-# MetroC_R-Project
+# R Project
 Metro College R programming Project
 
 Presentation:
